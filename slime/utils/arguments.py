@@ -845,6 +845,15 @@ def get_slime_extra_args_provider(add_custom_arguments=None):
                     "Specify the key in the reward dict using this argument.",
                 ),
             )
+            parser.add_argument(
+                "--wandb-log-memory",
+                action="store_true",
+                default=False,
+                help=(
+                    "Whether to log GPU and CPU memory usage to wandb. "
+                    "This will track GPU allocated/reserved memory and CPU memory usage at each rollout step."
+                ),
+            )
             parser.add_argument("--wandb-run-id", type=str, default=None)
             return parser
 
