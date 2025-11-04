@@ -457,15 +457,19 @@ def train_one_step(
                     "mtp_labels": batch["tokens"],
                 }
 
-            output_tensor = model(
-                input_ids=batch["tokens"],
-                position_ids=None,
-                attention_mask=None,
-                labels=None,
-                packed_seq_params=batch["packed_seq_params"],
-                loss_mask=loss_mask,
-                mtp_kwargs=mtp_kwargs,
-            )
+            # Build kwargs dict, only include mtp_kwargs if non-empty
+            forward_kwargs = {
+                "input_ids": batch["tokens"],
+                "position_ids": None,
+                "attention_mask": None,
+                "labels": None,
+                "packed_seq_params": batch["packed_seq_params"],
+                "loss_mask": loss_mask,
+            }
+            if mtp_kwargs:  # Only add mtp_kwargs if it's non-empty
+                forward_kwargs["mtp_kwargs"] = mtp_kwargs
+            
+            output_tensor = model(**forward_kwargs)
 
         if os.environ.get("ENABLE_ROUTING_REPLAY", "0") == "1":
             os.environ["ROUTING_REPLAY_STAGE"] = old_stage
